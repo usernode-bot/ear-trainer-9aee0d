@@ -302,7 +302,7 @@
     playbackError.classList.add('hidden');
     nextBtn.classList.add('hidden');
     playBtn.disabled = false;
-    progressEl.textContent = 'Question ' + (questionIndex + 1) + ' of 10';
+    progressEl.textContent = 'Question ' + (questionIndex + 1) + ' of 10 · ' + correctCount + ' correct';
     renderAnswers(activeSet, item);
     playItem(item);
   }
@@ -337,6 +337,7 @@
           }
         });
         playBtn.disabled = true;
+        progressEl.textContent = 'Question ' + (questionIndex + 1) + ' of 10 · ' + correctCount + ' correct';
         nextBtn.textContent = (questionIndex === questions.length - 1) ? 'See results' : 'Next question';
         nextBtn.classList.remove('hidden');
       });
