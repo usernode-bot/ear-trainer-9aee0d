@@ -109,29 +109,39 @@ app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 // fresh load.
 app.get('/favicon.ico', (_req, res) => res.status(204).end());
 
-// Button press
-app.post('/api/press', async (req, res) => {
+// Record a finished quiz run (append-only; progress aggregation takes the best).
+app.post('/api/attempts', async (req, res) => {
   try {
+    const { lessonId, size, correct, total } = req.body || {};
+    const isInt = (v) => Number.isInteger(v);
+    if (
+      typeof lessonId !== 'string' || lessonId.trim().length === 0 ||
+      !['small', 'medium', 'large'].includes(size) ||
+      total !== 10 || !isInt(correct) || correct < 0 || correct > 10
+    ) {
+      return res.status(400).json({ error: 'Invalid attempt payload' });
+    }
     await pool.query(`
-      INSERT INTO presses (user_id, username) VALUES ($1, $2)
-    `, [req.user.id, req.user.username]);
+      INSERT INTO attempts (user_id, lesson_id, size, total, correct)
+      VALUES ($1, $2, $3, $4, $5)
+    `, [req.user.id, lessonId, size, total, correct]);
     res.json({ ok: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// Leaderboard
-app.get('/api/leaderboard', async (_req, res) => {
+// Per-(lesson, size) best score across the user's attempts.
+app.get('/api/progress', async (req, res) => {
   try {
     const { rows } = await pool.query(`
-      SELECT username, COUNT(*) as presses
-      FROM presses
-      GROUP BY username
-      ORDER BY presses DESC
-      LIMIT 50
-    `);
-    res.json({ leaderboard: rows });
+      SELECT lesson_id AS "lessonId", size, MAX(correct) AS correct, MAX(total) AS total
+      FROM attempts
+      WHERE user_id = $1
+      GROUP BY lesson_id, size
+      ORDER BY lesson_id, size
+    `, [req.user.id]);
+    res.json({ progress: rows });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -176,10 +186,13 @@ app.get('*', (req, res) => {
 
 async function start() {
   await pool.query(`
-    CREATE TABLE IF NOT EXISTS presses (
+    CREATE TABLE IF NOT EXISTS attempts (
       id SERIAL PRIMARY KEY,
       user_id INTEGER NOT NULL,
-      username VARCHAR(255) NOT NULL,
+      lesson_id TEXT NOT NULL,
+      size TEXT NOT NULL,
+      total INTEGER NOT NULL,
+      correct INTEGER NOT NULL,
       created_at TIMESTAMPTZ DEFAULT NOW()
     )
   `);
