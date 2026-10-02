@@ -78,6 +78,7 @@
   var size = null;
   var activeSet = [];
   var questions = [];
+  var roots = [];
   var questionIndex = 0;
   var correctCount = 0;
   var answered = false;
@@ -212,9 +213,13 @@
     });
   }
 
-  function playItem(item) {
+  function playItem(item, rootOffset) {
     var voices = [];
-    if (lesson && lesson.id.indexOf('intervals-') === 0) {
+    if (lesson && lesson.id.indexOf('notes-') === 0) {
+      // two notes played one after the other: the tonic, then the target
+      voices.push({ semitone: rootOffset, delay: 0 });
+      voices.push({ semitone: rootOffset + item.semitone, delay: 1.1 });
+    } else if (lesson && lesson.id.indexOf('intervals-') === 0) {
       // two notes played one after the other, starting on C4
       voices.push({ semitone: 0, delay: 0 });
       voices.push({ semitone: item.semitones, delay: 1.1 });
@@ -280,6 +285,7 @@
     size = null;
     activeSet = [];
     questions = [];
+    roots = [];
     correctCount = 0;
     questionIndex = 0;
     answered = false;
@@ -321,8 +327,12 @@
     var setSize = { small: 3, medium: 5, large: lesson.items.length }[size];
     activeSet = lesson.items.slice(0, Math.min(setSize, lesson.items.length));
     questions = [];
+    roots = [];
     for (var i = 0; i < 10; i++) {
       questions.push(activeSet[Math.floor(Math.random() * activeSet.length)]);
+      // Fixed per question so replaying plays identical pitches: notes
+      // lessons draw a random tonic across all keys, others stay on C4.
+      roots.push(lesson.id.indexOf('notes-') === 0 ? Math.floor(Math.random() * 12) : 0);
     }
     questionIndex = 0;
     correctCount = 0;
@@ -343,7 +353,7 @@
     playBtn.disabled = false;
     progressEl.textContent = 'Question ' + (questionIndex + 1) + ' of 10 · ' + correctCount + ' correct';
     renderAnswers(activeSet, item);
-    playItem(item);
+    playItem(item, roots[questionIndex]);
   }
 
   function renderAnswers(choices, correctItem) {
@@ -421,7 +431,7 @@
   });
 
   playBtn.addEventListener('click', function () {
-    if (questionIndex < questions.length) playItem(questions[questionIndex]);
+    if (questionIndex < questions.length) playItem(questions[questionIndex], roots[questionIndex]);
   });
 
   nextBtn.addEventListener('click', function () {
