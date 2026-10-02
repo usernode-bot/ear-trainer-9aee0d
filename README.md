@@ -8,6 +8,9 @@ your ear rather than absolute pitch.
 
 - **Intervals** - two notes played one after the other; identify the gap
   between them (perfect 5th, major 3rd, tritone and more).
+- **Notes** - a home note, then a second note; identify where the second note
+  sits in the major scale. The home note changes every question, so you
+  practise scale degrees in any key.
 - **Chords** - one chord played all at once; identify its quality (major,
   minor, diminished, dominant 7th and more).
 - **Progressions** - a short chord sequence played one after another;

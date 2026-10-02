@@ -9,7 +9,7 @@
   'use strict';
 
   var CURRICULUM = {
-    types: ['notes', 'intervals', 'chords', 'progressions'],
+    types: ['intervals', 'notes', 'chords', 'progressions'],
     notes: {
       name: 'Notes',
       lessons: [
