@@ -33,44 +33,33 @@
   var retryBtn = document.getElementById('retry-btn');
   var backBtn = document.getElementById('back-btn');
   var backBtn2 = document.getElementById('back-btn2');
-  var themeToggle = document.getElementById('theme-toggle');
 
   // ---------- theme ----------
   // Resolves the light/dark mode the same way as the inline head script in
-  // index.html, so the toggle label always matches the applied mode: a stored
-  // choice ('eartrainer-theme', 'light' or 'dark') wins; otherwise the system
-  // preference decides, falling back to dark when nothing reports one.
+  // index.html: the system preference decides, falling back to dark when
+  // nothing reports one.
   function resolveThemeMode() {
-    var mode = null;
-    try {
-      var stored = localStorage.getItem('eartrainer-theme');
-      if (stored === 'light' || stored === 'dark') mode = stored;
-    } catch (e) {}
-    if (mode !== 'light' && mode !== 'dark') {
-      mode = 'dark';
-      if (window.matchMedia) {
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches) mode = 'dark';
-        else if (window.matchMedia('(prefers-color-scheme: light)').matches) mode = 'light';
-      }
+    var mode = 'dark';
+    if (window.matchMedia) {
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) mode = 'dark';
+      else if (window.matchMedia('(prefers-color-scheme: light)').matches) mode = 'light';
     }
     return mode;
   }
 
   function applyTheme(mode) {
     document.documentElement.classList.toggle('dark', mode === 'dark');
-    if (themeToggle) themeToggle.textContent = (mode === 'dark') ? 'Light mode' : 'Dark mode';
-    try {
-      localStorage.setItem('eartrainer-theme', mode);
-    } catch (e) {
-      // storage blocked (e.g. private browsing): toggle still works this session
-    }
   }
 
-  if (themeToggle) {
-    applyTheme(resolveThemeMode());
-    themeToggle.addEventListener('click', function () {
-      applyTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark');
-    });
+  applyTheme(resolveThemeMode());
+  if (window.matchMedia) {
+    var themeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    var themeListener = function () { applyTheme(resolveThemeMode()); };
+    if (typeof themeQuery.addEventListener === 'function') {
+      themeQuery.addEventListener('change', themeListener);
+    } else if (typeof themeQuery.addListener === 'function') {
+      themeQuery.addListener(themeListener); // older Safari
+    }
   }
 
   // State
