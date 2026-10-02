@@ -19,6 +19,11 @@
         "public/curriculum.js",
         "public/quiz.js"
       ]
+    },
+    {
+      "name": "Theme toggle present",
+      "path": "/",
+      "expectSelector": "#theme-toggle"
     }
   ]
 }

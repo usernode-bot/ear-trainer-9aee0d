@@ -33,6 +33,45 @@
   var retryBtn = document.getElementById('retry-btn');
   var backBtn = document.getElementById('back-btn');
   var backBtn2 = document.getElementById('back-btn2');
+  var themeToggle = document.getElementById('theme-toggle');
+
+  // ---------- theme ----------
+  // Resolves the light/dark mode the same way as the inline head script in
+  // index.html, so the toggle label always matches the applied mode: a stored
+  // choice ('eartrainer-theme', 'light' or 'dark') wins; otherwise the system
+  // preference decides, falling back to dark when nothing reports one.
+  function resolveThemeMode() {
+    var mode = null;
+    try {
+      var stored = localStorage.getItem('eartrainer-theme');
+      if (stored === 'light' || stored === 'dark') mode = stored;
+    } catch (e) {}
+    if (mode !== 'light' && mode !== 'dark') {
+      mode = 'dark';
+      if (window.matchMedia) {
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) mode = 'dark';
+        else if (window.matchMedia('(prefers-color-scheme: light)').matches) mode = 'light';
+      }
+    }
+    return mode;
+  }
+
+  function applyTheme(mode) {
+    document.documentElement.classList.toggle('dark', mode === 'dark');
+    if (themeToggle) themeToggle.textContent = (mode === 'dark') ? 'Light mode' : 'Dark mode';
+    try {
+      localStorage.setItem('eartrainer-theme', mode);
+    } catch (e) {
+      // storage blocked (e.g. private browsing): toggle still works this session
+    }
+  }
+
+  if (themeToggle) {
+    applyTheme(resolveThemeMode());
+    themeToggle.addEventListener('click', function () {
+      applyTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark');
+    });
+  }
 
   // State
   var lesson = null;
@@ -101,11 +140,11 @@
     CURRICULUM.types.forEach(function (typeKey) {
       var group = CURRICULUM[typeKey];
       html += '<section class="flex flex-col gap-3">';
-      html += '<h2 class="text-sm font-medium text-zinc-500 px-1">' + group.name + '</h2>';
+      html += '<h2 class="text-sm font-medium text-zinc-500 dark:text-zinc-500 px-1">' + group.name + '</h2>';
       group.lessons.forEach(function (ls) {
         var unlocked = isUnlocked(ls.id);
         var best = bestScore(ls.id);
-        var base = 'rounded-xl border border-zinc-800 bg-zinc-900/60 p-4 flex flex-col gap-1 transition-colors ';
+        var base = 'rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-4 flex flex-col gap-1 transition-colors ';
         if (unlocked) {
           html += '<button type="button" data-lesson="' + ls.id + '" class="' + base +
             'hover:border-violet-500 text-left cursor-pointer">';
@@ -113,14 +152,14 @@
           html += '<div class="' + base + 'opacity-50 cursor-not-allowed">';
         }
         html += '<div class="flex justify-between items-baseline gap-2">';
-        html += '<span class="font-semibold text-zinc-100 text-base">' + ls.name + '</span>';
+        html += '<span class="font-semibold text-zinc-900 dark:text-zinc-100 text-base">' + ls.name + '</span>';
         if (best !== null) {
           html += '<span class="text-xs text-violet-300 font-mono shrink-0">Best ' + best + '%</span>';
         }
         html += '</div>';
-        html += '<p class="text-sm text-zinc-400 leading-relaxed">' + ls.description + '</p>';
+        html += '<p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">' + ls.description + '</p>';
         if (!unlocked) {
-          html += '<p class="text-xs text-zinc-600 mt-1">Pass the previous lesson to unlock</p>';
+          html += '<p class="text-xs text-zinc-500 dark:text-zinc-600 mt-1">Pass the previous lesson to unlock</p>';
         }
         html += unlocked ? '</button>' : '</div>';
       });
@@ -262,7 +301,7 @@
     sizeList.innerHTML = '';
     options.forEach(function (opt) {
       var label = document.createElement('label');
-      label.className = 'flex items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900/60 p-3 cursor-pointer hover:border-violet-500 transition-colors';
+      label.className = 'flex items-center gap-3 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-3 cursor-pointer hover:border-violet-500 transition-colors';
       var input = document.createElement('input');
       input.type = 'radio';
       input.name = 'quiz-size';
@@ -270,7 +309,7 @@
       input.className = 'accent-violet-600';
       if (opt.key === 'small') input.checked = true;
       var span = document.createElement('span');
-      span.className = 'text-sm text-zinc-200 flex-1';
+      span.className = 'text-sm text-zinc-800 dark:text-zinc-200 flex-1';
       span.textContent = opt.label + ' — ' + (opt.key === 'large' ? 'all ' + opt.n : opt.n) + (opt.n === 1 ? ' sound' : ' sounds');
       label.appendChild(input);
       label.appendChild(span);
@@ -313,7 +352,7 @@
     shuffled.forEach(function (item) {
       var btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'w-full rounded-lg border border-zinc-800 bg-zinc-900/60 p-3 text-left text-sm text-zinc-100 hover:border-violet-500 transition-colors cursor-pointer';
+      btn.className = 'w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-3 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:border-violet-500 transition-colors cursor-pointer';
       btn.textContent = itemName(item);
       btn.disabled = false;
       btn.addEventListener('click', function () {
