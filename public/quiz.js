@@ -300,6 +300,7 @@
     ];
     sizeList.innerHTML = '';
     options.forEach(function (opt) {
+      var count = Math.min(opt.n, lesson.items.length);
       var label = document.createElement('label');
       label.className = 'flex items-center gap-3 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-3 cursor-pointer hover:border-violet-500 transition-colors';
       var input = document.createElement('input');
@@ -310,7 +311,8 @@
       if (opt.key === 'small') input.checked = true;
       var span = document.createElement('span');
       span.className = 'text-sm text-zinc-800 dark:text-zinc-200 flex-1';
-      span.textContent = opt.label + ' — ' + (opt.key === 'large' ? 'all ' + opt.n : opt.n) + (opt.n === 1 ? ' sound' : ' sounds');
+      var countText = (opt.key === 'large' ? 'All ' + count : count) + (count === 1 ? ' sound' : ' sounds');
+      span.textContent = countText + ' — ' + opt.label;
       label.appendChild(input);
       label.appendChild(span);
       sizeList.appendChild(label);

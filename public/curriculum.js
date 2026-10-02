@@ -3,7 +3,10 @@
  * Lesson types appear in learning order; each lesson's items are ordered so
  * the first entries are the easiest / most contrasting sounds. Small = first
  * 3 items, Medium = first 5, Large = the whole list. The quiz script reads
- * this global (window.EARTRAINER_CURRICULUM); the server never needs it.
+ * this global (window.EARTRAINER_CURRICULUM); the server never needs it. The
+ * quiz shows these sizes as count-first labels ("3 sounds — Small",
+ * "5 sounds — Medium", "All N sounds — Large"), with Medium capped at the
+ * lesson's actual item count when it has fewer than 5.
  */
 (function () {
   'use strict';
