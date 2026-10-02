@@ -9,7 +9,63 @@
   'use strict';
 
   var CURRICULUM = {
-    types: ['intervals', 'chords', 'progressions'],
+    types: ['intervals', 'notes', 'chords', 'progressions'],
+    notes: {
+      name: 'Notes',
+      lessons: [
+        {
+          id: 'notes-1',
+          name: 'First scale degrees',
+          description: 'Hear a tonic, then name where the next note sits: tonic, dominant and octave.',
+          items: [
+            { name: '1 — Tonic', semitone: 0 },
+            { name: '5 — Dominant', semitone: 7 },
+            { name: '8 — Octave', semitone: 12 },
+          ],
+        },
+        {
+          id: 'notes-2',
+          name: 'Thirds and steps',
+          description: 'Adds the mediant and subdominant to the first lesson.',
+          items: [
+            { name: '1 — Tonic', semitone: 0 },
+            { name: '5 — Dominant', semitone: 7 },
+            { name: '8 — Octave', semitone: 12 },
+            { name: '3 — Mediant', semitone: 4 },
+            { name: '4 — Subdominant', semitone: 5 },
+          ],
+        },
+        {
+          id: 'notes-3',
+          name: 'Up to the seventh',
+          description: 'Adds the supertonic and submediant to the earlier lessons.',
+          items: [
+            { name: '1 — Tonic', semitone: 0 },
+            { name: '5 — Dominant', semitone: 7 },
+            { name: '8 — Octave', semitone: 12 },
+            { name: '3 — Mediant', semitone: 4 },
+            { name: '4 — Subdominant', semitone: 5 },
+            { name: '2 — Supertonic', semitone: 2 },
+            { name: '6 — Submediant', semitone: 9 },
+          ],
+        },
+        {
+          id: 'notes-4',
+          name: 'Full major scale',
+          description: 'Adds the leading tone, completing all eight degrees of the major scale.',
+          items: [
+            { name: '1 — Tonic', semitone: 0 },
+            { name: '5 — Dominant', semitone: 7 },
+            { name: '8 — Octave', semitone: 12 },
+            { name: '3 — Mediant', semitone: 4 },
+            { name: '4 — Subdominant', semitone: 5 },
+            { name: '2 — Supertonic', semitone: 2 },
+            { name: '6 — Submediant', semitone: 9 },
+            { name: '7 — Leading tone', semitone: 11 },
+          ],
+        },
+      ],
+    },
     intervals: {
       name: 'Intervals',
       lessons: [
