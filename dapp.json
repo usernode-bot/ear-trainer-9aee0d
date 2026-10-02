@@ -1,0 +1,10 @@
+{
+  "description": "Learn to identify relative notes, chords, and progressions from songs and hymns",
+  "secrets": [],
+  "governance": {
+    "approvers": "invited",
+    "approvals": {
+      "atLeast": 1
+    }
+  }
+}
