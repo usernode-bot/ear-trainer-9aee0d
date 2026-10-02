@@ -6,5 +6,19 @@
     "approvals": {
       "atLeast": 1
     }
-  }
+  },
+  "tests": [
+    {
+      "name": "Home renders lessons",
+      "path": "/",
+      "expectSelector": "#lesson-groups",
+      "visual": true,
+      "id": "home.lessons",
+      "impact": [
+        "public/index.html",
+        "public/curriculum.js",
+        "public/quiz.js"
+      ]
+    }
+  ]
 }
