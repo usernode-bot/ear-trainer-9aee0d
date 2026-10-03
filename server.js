@@ -110,6 +110,9 @@ app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 app.get('/favicon.ico', (_req, res) => res.status(204).end());
 
 // Record a finished quiz run (append-only; progress aggregation takes the best).
+// The client sends size 'large' for every new run — the size options were
+// removed and a lesson's whole item list is the set — but 'small'/'medium'
+// stay valid here so rows saved before that change keep aggregating.
 app.post('/api/attempts', async (req, res) => {
   try {
     const { lessonId, size, correct, total } = req.body || {};

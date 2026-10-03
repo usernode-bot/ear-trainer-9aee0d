@@ -18,9 +18,7 @@
   var groupsRoot = document.getElementById('lesson-groups');
   var quizTitle = document.getElementById('quiz-title');
   var quizDesc = document.getElementById('quiz-desc');
-  var sizeChoice = document.getElementById('size-choice');
-  var sizeList = document.getElementById('size-list');
-  var startBtn = document.getElementById('start-btn');
+  var sizeNote = document.getElementById('size-note');
   var quizArea = document.getElementById('quiz-area');
   var playbackError = document.getElementById('playback-error');
   var playBtn = document.getElementById('play-btn');
@@ -64,7 +62,6 @@
 
   // State
   var lesson = null;
-  var size = null;
   var activeSet = [];
   var questions = [];
   var roots = [];
@@ -248,30 +245,9 @@
     return item.name;
   }
 
-  function showSizeChoice() {
-    sizeChoice.classList.remove('hidden');
-    quizArea.classList.add('hidden');
-    quizArea.classList.remove('flex');
-    resultsEl.classList.add('hidden');
-    playBtn.classList.add('hidden');
-    answersEl.innerHTML = '';
-    feedback.textContent = '';
-    nextBtn.classList.add('hidden');
-    progressEl.classList.add('hidden');
-    playbackError.classList.add('hidden');
-  }
-
-  function showQuizArea() {
-    sizeChoice.classList.add('hidden');
-    resultsEl.classList.add('hidden');
-    quizArea.classList.remove('hidden');
-    quizArea.classList.add('flex');
-  }
-
   function openLesson(lessonId) {
     lesson = findLesson(lessonId);
     if (!lesson) return;
-    size = null;
     activeSet = [];
     questions = [];
     roots = [];
@@ -282,39 +258,17 @@
     quizDesc.textContent = lesson.description;
     home.classList.add('hidden');
     quiz.classList.remove('hidden');
-    showSizeChoice();
-    renderSizes();
+    // The first question plays inside this click handler (the lesson button
+    // on the home screen), satisfying autoplay rules — there is no separate
+    // start step anymore.
+    buildQuestions();
     window.scrollTo(0, 0);
   }
 
-  function renderSizes() {
-    var options = [
-      { key: 'small', label: 'Small', n: 3 },
-      { key: 'medium', label: 'Medium', n: 5 },
-      { key: 'large', label: 'Large', n: lesson.items.length },
-    ];
-    sizeList.innerHTML = '';
-    options.forEach(function (opt) {
-      var label = document.createElement('label');
-      label.className = 'flex items-center gap-3 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-3 cursor-pointer hover:border-violet-500 transition-colors';
-      var input = document.createElement('input');
-      input.type = 'radio';
-      input.name = 'quiz-size';
-      input.value = opt.key;
-      input.className = 'accent-violet-600';
-      if (opt.key === 'small') input.checked = true;
-      var span = document.createElement('span');
-      span.className = 'text-sm text-zinc-800 dark:text-zinc-200 flex-1';
-      span.textContent = opt.label + ' — ' + (opt.key === 'large' ? 'all ' + opt.n : opt.n) + (opt.n === 1 ? ' sound' : ' sounds');
-      label.appendChild(input);
-      label.appendChild(span);
-      sizeList.appendChild(label);
-    });
-  }
-
   function buildQuestions() {
-    var setSize = { small: 3, medium: 5, large: lesson.items.length }[size];
-    activeSet = lesson.items.slice(0, Math.min(setSize, lesson.items.length));
+    // The lesson's own item list is the set: every sound in the lesson is in
+    // play for the whole run. To practice fewer sounds, open an earlier lesson.
+    activeSet = lesson.items.slice();
     questions = [];
     roots = [];
     for (var i = 0; i < 10; i++) {
@@ -326,10 +280,18 @@
     questionIndex = 0;
     correctCount = 0;
     answered = false;
-    showQuizArea();
+    var n = activeSet.length;
+    sizeNote.textContent = 'All ' + n + (n === 1 ? ' sound' : ' sounds') +
+      ' in this lesson · 10 questions';
+    resultsEl.classList.add('hidden');
+    quizArea.classList.remove('hidden');
+    quizArea.classList.add('flex');
     progressEl.classList.remove('hidden');
     playBtn.classList.remove('hidden');
     playBtn.disabled = false;
+    playbackError.classList.add('hidden');
+    feedback.textContent = '';
+    nextBtn.classList.add('hidden');
     showQuestion();
   }
 
@@ -387,13 +349,15 @@
     scoreEl.textContent = correctCount + ' of 10 — ' + Math.round((correctCount / 10) * 100) + '%';
     quizArea.classList.add('hidden');
     quizArea.classList.remove('flex');
-    sizeChoice.classList.add('hidden');
     resultsEl.classList.remove('hidden');
 
     fetch('/api/attempts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-usernode-token': TOKEN },
-      body: JSON.stringify({ lessonId: lesson.id, size: size, correct: correctCount, total: 10 }),
+      // The server still records a size key per attempt; new runs always send
+      // 'large' since the lesson's whole item list is the set. Rows saved under
+      // the old small/medium runs stay valid and count toward best scores.
+      body: JSON.stringify({ lessonId: lesson.id, size: 'large', correct: correctCount, total: 10 }),
     }).then(function () {
       return fetchProgress();
     }).then(function () {
@@ -411,14 +375,6 @@
 
   // ---------- wiring ----------
 
-  startBtn.addEventListener('click', function () {
-    var picked = sizeList.querySelector('input[name="quiz-size"]:checked');
-    if (!picked) return;
-    size = picked.value;
-    // First question plays inside this click handler, satisfying autoplay rules.
-    buildQuestions();
-  });
-
   playBtn.addEventListener('click', function () {
     if (questionIndex < questions.length) playItem(questions[questionIndex], roots[questionIndex]);
   });
@@ -433,8 +389,9 @@
   });
 
   retryBtn.addEventListener('click', function () {
-    size = null;
-    showSizeChoice();
+    // The first question plays inside this click handler, satisfying autoplay
+    // rules — Retry jumps straight into a fresh run.
+    buildQuestions();
   });
 
   backBtn.addEventListener('click', backToHome);

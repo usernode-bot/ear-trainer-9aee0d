@@ -1,9 +1,10 @@
 /* Static curriculum for Ear Trainer.
  *
  * Lesson types appear in learning order; each lesson's items are ordered so
- * the first entries are the easiest / most contrasting sounds. Small = first
- * 3 items, Medium = first 5, Large = the whole list. The quiz script reads
- * this global (window.EARTRAINER_CURRICULUM); the server never needs it.
+ * the first entries are the easiest / most contrasting sounds. A lesson's own
+ * item list is the set a run quizzes on — there are no size options; to
+ * practice fewer sounds, open an earlier lesson. The quiz script reads this
+ * global (window.EARTRAINER_CURRICULUM); the server never needs it.
  */
 (function () {
   'use strict';
