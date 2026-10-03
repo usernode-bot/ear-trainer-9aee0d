@@ -31,50 +31,40 @@
   var retryBtn = document.getElementById('retry-btn');
   var backBtn = document.getElementById('back-btn');
   var backBtn2 = document.getElementById('back-btn2');
-  var themeToggle = document.getElementById('theme-toggle');
 
   // ---------- theme ----------
   // Resolves the light/dark mode the same way as the inline head script in
-  // index.html, so the toggle label always matches the applied mode: a stored
-  // choice ('eartrainer-theme', 'light' or 'dark') wins; otherwise the system
-  // preference decides, falling back to dark when nothing reports one.
+  // index.html: the system preference decides, falling back to dark when
+  // nothing reports one.
   function resolveThemeMode() {
-    var mode = null;
-    try {
-      var stored = localStorage.getItem('eartrainer-theme');
-      if (stored === 'light' || stored === 'dark') mode = stored;
-    } catch (e) {}
-    if (mode !== 'light' && mode !== 'dark') {
-      mode = 'dark';
-      if (window.matchMedia) {
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches) mode = 'dark';
-        else if (window.matchMedia('(prefers-color-scheme: light)').matches) mode = 'light';
-      }
+    var mode = 'dark';
+    if (window.matchMedia) {
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) mode = 'dark';
+      else if (window.matchMedia('(prefers-color-scheme: light)').matches) mode = 'light';
     }
     return mode;
   }
 
   function applyTheme(mode) {
     document.documentElement.classList.toggle('dark', mode === 'dark');
-    if (themeToggle) themeToggle.textContent = (mode === 'dark') ? 'Light mode' : 'Dark mode';
-    try {
-      localStorage.setItem('eartrainer-theme', mode);
-    } catch (e) {
-      // storage blocked (e.g. private browsing): toggle still works this session
-    }
   }
 
-  if (themeToggle) {
-    applyTheme(resolveThemeMode());
-    themeToggle.addEventListener('click', function () {
-      applyTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark');
-    });
+  applyTheme(resolveThemeMode());
+  if (window.matchMedia) {
+    var themeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    var themeListener = function () { applyTheme(resolveThemeMode()); };
+    if (typeof themeQuery.addEventListener === 'function') {
+      themeQuery.addEventListener('change', themeListener);
+    } else if (typeof themeQuery.addListener === 'function') {
+      themeQuery.addListener(themeListener); // older Safari
+    }
   }
 
   // State
   var lesson = null;
   var activeSet = [];
   var questions = [];
+  var roots = [];
   var questionIndex = 0;
   var correctCount = 0;
   var answered = false;
@@ -209,9 +199,13 @@
     });
   }
 
-  function playItem(item) {
+  function playItem(item, rootOffset) {
     var voices = [];
-    if (lesson && lesson.id.indexOf('intervals-') === 0) {
+    if (lesson && lesson.id.indexOf('notes-') === 0) {
+      // two notes played one after the other: the tonic, then the target
+      voices.push({ semitone: rootOffset, delay: 0 });
+      voices.push({ semitone: rootOffset + item.semitone, delay: 1.1 });
+    } else if (lesson && lesson.id.indexOf('intervals-') === 0) {
       // two notes played one after the other, starting on C4
       voices.push({ semitone: 0, delay: 0 });
       voices.push({ semitone: item.semitones, delay: 1.1 });
@@ -254,6 +248,12 @@
   function openLesson(lessonId) {
     lesson = findLesson(lessonId);
     if (!lesson) return;
+    activeSet = [];
+    questions = [];
+    roots = [];
+    correctCount = 0;
+    questionIndex = 0;
+    answered = false;
     quizTitle.textContent = lesson.name;
     quizDesc.textContent = lesson.description;
     home.classList.add('hidden');
@@ -270,8 +270,12 @@
     // play for the whole run. To practice fewer sounds, open an earlier lesson.
     activeSet = lesson.items.slice();
     questions = [];
+    roots = [];
     for (var i = 0; i < 10; i++) {
       questions.push(activeSet[Math.floor(Math.random() * activeSet.length)]);
+      // Fixed per question so replaying plays identical pitches: notes
+      // lessons draw a random tonic across all keys, others stay on C4.
+      roots.push(lesson.id.indexOf('notes-') === 0 ? Math.floor(Math.random() * 12) : 0);
     }
     questionIndex = 0;
     correctCount = 0;
@@ -300,7 +304,7 @@
     playBtn.disabled = false;
     progressEl.textContent = 'Question ' + (questionIndex + 1) + ' of 10 · ' + correctCount + ' correct';
     renderAnswers(activeSet, item);
-    playItem(item);
+    playItem(item, roots[questionIndex]);
   }
 
   function renderAnswers(choices, correctItem) {
@@ -372,7 +376,7 @@
   // ---------- wiring ----------
 
   playBtn.addEventListener('click', function () {
-    if (questionIndex < questions.length) playItem(questions[questionIndex]);
+    if (questionIndex < questions.length) playItem(questions[questionIndex], roots[questionIndex]);
   });
 
   nextBtn.addEventListener('click', function () {
