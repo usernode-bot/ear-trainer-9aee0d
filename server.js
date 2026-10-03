@@ -109,30 +109,53 @@ app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 // fresh load.
 app.get('/favicon.ico', (_req, res) => res.status(204).end());
 
-// Button press
-app.post('/api/press', async (req, res) => {
+// Progress for the signed-in user: their best score per lesson level.
+app.get('/api/progress', async (req, res) => {
   try {
-    await pool.query(`
-      INSERT INTO presses (user_id, username) VALUES ($1, $2)
-    `, [req.user.id, req.user.username]);
-    res.json({ ok: true });
+    const { rows } = await pool.query(`
+      SELECT lesson_type, level, best_correct, best_total, attempts
+      FROM lesson_progress
+      WHERE user_id = $1
+      ORDER BY lesson_type, level
+    `, [req.user.id]);
+    res.json({ progress: rows });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// Leaderboard
-app.get('/api/leaderboard', async (_req, res) => {
+const LESSON_TYPES = new Set(['intervals', 'chords', 'progressions']);
+
+// Record a finished 10-question session: append to the history and upsert
+// the player's best score for that lesson level.
+app.post('/api/attempt', async (req, res) => {
+  const { lesson_type, level, correct, total } = req.body || {};
+  const lvl = Number(level), cor = Number(correct), tot = Number(total);
+  if (!LESSON_TYPES.has(lesson_type)
+    || !Number.isInteger(lvl) || lvl < 1 || lvl > 5
+    || !Number.isInteger(cor) || !Number.isInteger(tot)
+    || tot < 1 || tot > 20 || cor < 0 || cor > tot) {
+    return res.status(400).json({ error: 'Invalid attempt' });
+  }
   try {
-    const { rows } = await pool.query(`
-      SELECT username, COUNT(*) as presses
-      FROM presses
-      GROUP BY username
-      ORDER BY presses DESC
-      LIMIT 50
-    `);
-    res.json({ leaderboard: rows });
+    await pool.query('BEGIN');
+    await pool.query(`
+      INSERT INTO quiz_attempts (user_id, username, lesson_type, level, correct, total)
+      VALUES ($1, $2, $3, $4, $5, $6)
+    `, [req.user.id, req.user.username, lesson_type, lvl, cor, tot]);
+    await pool.query(`
+      INSERT INTO lesson_progress (user_id, lesson_type, level, best_correct, best_total, attempts)
+      VALUES ($1, $2, $3, $4, $5, 1)
+      ON CONFLICT (user_id, lesson_type, level) DO UPDATE SET
+        best_correct = GREATEST(lesson_progress.best_correct, EXCLUDED.best_correct),
+        best_total = EXCLUDED.best_total,
+        attempts = lesson_progress.attempts + 1,
+        updated_at = NOW()
+    `, [req.user.id, lesson_type, lvl, cor, tot]);
+    await pool.query('COMMIT');
+    res.json({ ok: true });
   } catch (err) {
+    await pool.query('ROLLBACK').catch(() => {});
     res.status(500).json({ error: err.message });
   }
 });
@@ -176,13 +199,33 @@ app.get('*', (req, res) => {
 
 async function start() {
   await pool.query(`
-    CREATE TABLE IF NOT EXISTS presses (
+    CREATE TABLE IF NOT EXISTS quiz_attempts (
       id SERIAL PRIMARY KEY,
       user_id INTEGER NOT NULL,
       username VARCHAR(255) NOT NULL,
+      lesson_type TEXT NOT NULL,
+      level INTEGER NOT NULL,
+      correct INTEGER NOT NULL,
+      total INTEGER NOT NULL,
       created_at TIMESTAMPTZ DEFAULT NOW()
     )
   `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS lesson_progress (
+      user_id INTEGER NOT NULL,
+      lesson_type TEXT NOT NULL,
+      level INTEGER NOT NULL,
+      best_correct INTEGER NOT NULL DEFAULT 0,
+      best_total INTEGER NOT NULL DEFAULT 0,
+      attempts INTEGER NOT NULL DEFAULT 0,
+      updated_at TIMESTAMPTZ DEFAULT NOW(),
+      PRIMARY KEY (user_id, lesson_type, level)
+    )
+  `);
+  // Per-user practice history only the owner should see: schema copies to
+  // staging, rows never leave production.
+  await pool.query(`COMMENT ON TABLE quiz_attempts IS 'staging:private'`);
+  await pool.query(`COMMENT ON TABLE lesson_progress IS 'staging:private'`);
   const server = app.listen(port, () => console.log(`Listening on :${port}`));
   // Let Envoy retire idle upstream connections at 60s, with a 15s margin.
   server.keepAliveTimeout = 75_000;

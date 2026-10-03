@@ -1,3 +1,9 @@
 {
-  "secrets": []
+  "secrets": [],
+  "tests": [
+    { "name": "Lesson list loads", "path": "/", "expectText": "Progressions" },
+    { "name": "Lesson list shows levels", "path": "/", "expectText": "8 sounds" },
+    { "name": "Lesson opens with Play button", "path": "/?lesson=intervals&level=1", "expectSelector": "[data-testid=play]" },
+    { "name": "Lesson shows answer choices", "path": "/?lesson=intervals&level=1", "expectText": "Octave" }
+  ]
 }

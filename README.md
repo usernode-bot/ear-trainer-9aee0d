@@ -1,28 +1,32 @@
 # Ear Trainer
 
-> **Starter template** — this repo was scaffolded by Homeroom Social
-> Vibecoding. Everything in it is placeholder example code until the
-> app's first real feature is built.
+Learn to recognise intervals, chords and chord progressions by ear.
 
-The scaffold is a small working demo that proves the plumbing works:
+- **Three lesson types** — Intervals, Chords and Progressions, each with
+  five levels of growing set size (2 → 3 → 4 → 6 → 8 sounds).
+- **Ordered by difficulty** — early levels train a small set of very
+  distinct sounds; later levels quiz you on the full set of the most
+  similar ones (closer intervals, more complex chords, progressions that
+  resemble each other).
+- **How a lesson works** — 10 questions. Each one plays a sound
+  (synthesized in the browser with the Web Audio API, at a random pitch or
+  key) and you tap its name from the answer buttons. Immediate
+  right/wrong feedback, and a piano keyboard lights up the notes you
+  heard.
+- **Progress** — your best score per lesson level is saved and shown on
+  the lesson list. Progress is per user; nothing is shared between users.
 
-- **Sign-in** — the server verifies the platform-issued user token
-  (an RS256 JWT) on every request, so the app already knows who is
-  using it. No accounts to build.
-- **Database** — the app has its own private Postgres database; the
-  demo stores button presses in a `presses` table.
-- **Live API** — two example routes (`/api/press`,
-  `/api/leaderboard`) read and write through a real Express server.
-- **Styling** — Tailwind CSS, precompiled by `npm run build` during
-  image creation with either Kubernetes/Paketo or standalone Docker, in a
-  light and a dark look that follow the viewer's Homeroom theme.
+Progressions are drawn from well-known songs and hymns (I–IV–V–I,
+I–V–vi–IV, the hymn amen cadence, and others), taught from the most
+distinct to the most similar.
 
-## Replacing the template
+## Building and running
 
-Open the app on Homeroom, tap the Homeroom icon in the header, choose
-**Start a new change**, and describe the app you want in plain English.
-The template will be replaced with your real app. You can also run
-Claude Code against this repo directly; start with `CLAUDE.md`, which
-carries the app-specific notes and points at the platform rules.
+- `npm ci --include=dev && npm run build` compiles the Tailwind
+  stylesheet (`public/tailwind.css`); the Docker/Paketo image build does
+  this automatically on every deploy.
+- `node server.js` serves the app on port 3000 with its own Postgres
+  (`DATABASE_URL`).
 
-Once the real app exists, rewrite this README to describe it.
+App-specific notes for Claude Code live in `CLAUDE.md`; the platform
+rules are at https://app.onhomeroom.com/claude.md.

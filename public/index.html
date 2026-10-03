@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+
   <script>
   // usernode-dev-console@1
   (function () {
@@ -64,7 +64,7 @@
   })();
   </script>
   <title>Ear Trainer</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%237c3aed'/><circle cx='50' cy='50' r='18' fill='white'/></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23f59e0b'/><rect x='30' y='22' width='8' height='56' rx='2' fill='white'/><rect x='46' y='22' width='8' height='56' rx='2' fill='white'/><rect x='62' y='22' width='8' height='56' rx='2' fill='white'/></svg>">
   <!-- Tailwind, PRECOMPILED for this app (was cdn.tailwindcss.com's
        in-browser engine plus an inline tailwind.config here). The config
        moved to tailwind.config.js in the repo root; npm run build compiles
@@ -107,103 +107,513 @@
     })();
   </script>
 </head>
-<body class="bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100 min-h-screen">
-  <main class="max-w-md mx-auto px-4 py-10 flex flex-col gap-6">
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen">
+  <main class="max-w-md mx-auto px-4 py-8 flex flex-col gap-6">
 
-    <!-- usernode-starter-notice@1 — starter-template messaging. When building
-         the user's real app, replace this whole screen and delete this block,
-         both sentinel comments included. -->
-    <section class="rounded-2xl border border-violet-500/30 bg-gradient-to-b from-violet-600/10 dark:from-violet-600/20 to-transparent p-6 text-center flex flex-col items-center gap-3">
-      <span class="inline-block rounded-full bg-violet-600/10 text-violet-700 dark:bg-violet-600/20 dark:text-violet-300 text-xs font-semibold uppercase tracking-wide px-3 py-1">Starter template</span>
-      <h1 class="text-2xl font-bold">Ear Trainer</h1>
-      <p class="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">Welcome to your new app! Everything on this screen is placeholder content that came with it.</p>
-      <p class="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">Tap the <strong class="text-violet-700 dark:text-violet-300 font-semibold">Homeroom icon</strong> in the header and choose <strong class="text-violet-700 dark:text-violet-300 font-semibold">Start a new change</strong> to start building your app. Describe what you'd like in plain English, and it will be turned into your real app.</p>
-    </section>
-
-    <section>
-      <h2 class="text-sm font-medium text-zinc-500 mb-2 px-1">What's already working</h2>
-      <div class="rounded-xl border border-zinc-200 bg-white divide-y divide-zinc-200 dark:border-zinc-800 dark:bg-zinc-900/60 dark:divide-zinc-800">
-        <div class="flex items-start gap-3 p-4">
-          <svg class="w-5 h-5 text-violet-600 dark:text-violet-400 shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 1 1 1.4-1.4L9 11.6l6.3-6.3a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/></svg>
-          <div>
-            <p class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Sign-in</p>
-            <p class="text-sm text-zinc-600 dark:text-zinc-400">You're signed in through Homeroom automatically — no accounts to build.</p>
-          </div>
-        </div>
-        <div class="flex items-start gap-3 p-4">
-          <svg class="w-5 h-5 text-violet-600 dark:text-violet-400 shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 1 1 1.4-1.4L9 11.6l6.3-6.3a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/></svg>
-          <div>
-            <p class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Database</p>
-            <p class="text-sm text-zinc-600 dark:text-zinc-400">Your app has its own private database, ready to store things.</p>
-          </div>
-        </div>
-        <div class="flex items-start gap-3 p-4">
-          <svg class="w-5 h-5 text-violet-600 dark:text-violet-400 shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7 7a1 1 0 0 1-1.4 0l-3-3a1 1 0 1 1 1.4-1.4L9 11.6l6.3-6.3a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/></svg>
-          <div>
-            <p class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Live API</p>
-            <p class="text-sm text-zinc-600 dark:text-zinc-400">The example below talks to a real server — try it.</p>
-          </div>
-        </div>
+    <!-- Lesson list: this screen's one job is picking a lesson. -->
+    <div id="list-view" class="flex flex-col gap-8">
+      <h1 class="text-2xl font-bold tracking-tight">Ear Trainer</h1>
+      <div id="lesson-sections" class="flex flex-col gap-8">
+        <p class="text-sm text-slate-500 dark:text-slate-400">Loading…</p>
       </div>
-    </section>
-    <!-- /usernode-starter-notice@1 -->
+      <p id="list-message" class="hidden text-sm text-rose-600 dark:text-rose-400"></p>
+    </div>
 
-    <section class="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900/60 p-5 flex flex-col items-center gap-5">
-      <div class="w-full flex items-baseline justify-between gap-2">
-        <h2 class="text-sm font-medium text-zinc-500">Try the example</h2>
-        <span class="text-xs text-zinc-500 dark:text-zinc-600">This example will be replaced</span>
+    <!-- Lesson screen: this screen's one job is hear, then answer. -->
+    <div id="lesson-view" class="hidden flex flex-col gap-6">
+      <div class="flex items-baseline justify-between gap-2">
+        <button id="back-btn" class="text-sm font-medium text-slate-500 hover:text-slate-800 dark:hover:text-slate-200">Lessons</button>
+        <span id="score" class="text-sm text-slate-500 dark:text-slate-400">Score 0/0</span>
       </div>
 
-      <button id="press-btn" class="w-32 h-32 rounded-full bg-violet-600 hover:bg-violet-500 active:scale-95 transition-all text-white text-xl font-bold shadow-lg shadow-violet-600/30">
-        Press!
-      </button>
-
-      <div id="count" class="text-lg text-zinc-600 dark:text-zinc-400">0 total presses</div>
-
-      <div class="w-full max-w-sm">
-        <h3 class="text-sm font-medium text-zinc-500 mb-2 text-center">Leaderboard</h3>
-        <div id="leaderboard" class="space-y-1"></div>
+      <div class="text-center">
+        <h1 id="lesson-title" class="text-xl font-bold tracking-tight"></h1>
+        <p id="question-count" class="text-sm text-slate-500 dark:text-slate-400 mt-1"></p>
       </div>
-    </section>
 
-    <p class="text-center text-xs text-zinc-500 dark:text-zinc-600">Built on Homeroom — this template screen disappears once you build your real app.</p>
+      <div class="flex flex-col items-center gap-3">
+        <button id="play-btn" data-testid="play" aria-label="Play sound"
+            class="w-24 h-24 rounded-full bg-amber-500 hover:bg-amber-400 active:scale-95 transition-all text-white shadow-lg shadow-amber-500/30 flex items-center justify-center">
+          <svg class="w-10 h-10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Tap Play, then choose what you heard</p>
+        <p id="sound-note" class="hidden text-xs text-rose-600 dark:text-rose-400">Sound unavailable — answers still work without audio.</p>
+      </div>
+
+      <div id="answers" class="grid grid-cols-2 gap-2" aria-label="Answers"></div>
+
+      <svg id="keyboard" viewBox="0 0 360 96" class="w-full" role="img" aria-label="Piano keyboard"></svg>
+
+      <div class="flex flex-col items-center gap-4 min-h-24">
+        <p id="feedback" class="text-sm font-semibold"></p>
+        <button id="next-btn" class="hidden px-8 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-white font-semibold shadow-md shadow-amber-500/25">Next</button>
+      </div>
+    </div>
+
+    <!-- End of a session. -->
+    <div id="done-view" class="hidden flex flex-col items-center gap-6 py-10">
+      <h1 class="text-2xl font-bold tracking-tight">Session complete</h1>
+      <p id="done-score" class="text-lg text-slate-600 dark:text-slate-300"></p>
+      <button id="done-btn" class="px-8 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-white font-semibold shadow-md shadow-amber-500/25">Back to lessons</button>
+    </div>
+
   </main>
 
   <script>
+  (function () {
+    'use strict';
+
+    // The iframe injects ?token= on load; forward it on every API call.
     const params = new URLSearchParams(window.location.search);
     const token = params.get('token') || '';
     const headers = token ? { 'x-usernode-token': token } : {};
 
-    async function loadLeaderboard() {
-      const res = await fetch('/api/leaderboard', { headers });
-      if (!res.ok) return;
-      const { leaderboard } = await res.json();
-      const el = document.getElementById('leaderboard');
-      if (!leaderboard.length) {
-        el.innerHTML = '<p class="text-center text-zinc-500 dark:text-zinc-600 text-sm">No presses yet</p>';
-        return;
-      }
-      el.innerHTML = leaderboard.map((r, i) =>
-        '<div class="flex justify-between px-3 py-1 rounded ' + (i === 0 ? 'bg-violet-600/10 text-violet-700 dark:bg-violet-600/20 dark:text-violet-300' : 'text-zinc-600 dark:text-zinc-400') + '">' +
-        '<span>' + (i + 1) + '. ' + r.username + '</span>' +
-        '<span class="font-mono">' + r.presses + '</span></div>'
-      ).join('');
-      const total = leaderboard.reduce((s, r) => s + parseInt(r.presses), 0);
-      document.getElementById('count').textContent = total + ' total presses';
+    // ---- Curriculum (static data; ordered most-distinct first) ----
+
+    const CATALOG = {
+      intervals: {
+        unison: { name: 'Unison', semitones: 0 },
+        octave: { name: 'Octave', semitones: 12 },
+        p5: { name: 'Perfect 5th', semitones: 7 },
+        p4: { name: 'Perfect 4th', semitones: 5 },
+        maj3: { name: 'Major 3rd', semitones: 4 },
+        min3: { name: 'Minor 3rd', semitones: 3 },
+        maj2: { name: 'Major 2nd', semitones: 2 },
+        min2: { name: 'Minor 2nd', semitones: 1 },
+      },
+      chords: {
+        maj: { name: 'Major', shape: [0, 4, 7] },
+        min: { name: 'Minor', shape: [0, 3, 7] },
+        dom7: { name: 'Dominant 7th', shape: [0, 4, 7, 10] },
+        dim: { name: 'Diminished', shape: [0, 3, 6] },
+        aug: { name: 'Augmented', shape: [0, 4, 8] },
+        min7: { name: 'Minor 7th', shape: [0, 3, 7, 10] },
+        maj7: { name: 'Major 7th', shape: [0, 4, 7, 11] },
+        m7b5: { name: 'Half-diminished', shape: [0, 3, 6, 10] },
+      },
+    };
+
+    // Progression chords by scale degree (relative to a major key root;
+    // the minor-mode degrees sit at the same pitch classes).
+    const DEGREES = {
+      I: { pc: 0, shape: [0, 4, 7] },
+      ii: { pc: 2, shape: [0, 3, 7] },
+      IV: { pc: 5, shape: [0, 4, 7] },
+      V: { pc: 7, shape: [0, 4, 7] },
+      vi: { pc: 9, shape: [0, 3, 7] },
+      i: { pc: 0, shape: [0, 3, 7] },
+      VII: { pc: 10, shape: [0, 4, 7] },
+      VI: { pc: 8, shape: [0, 4, 7] },
+    };
+
+    const PROGRESSIONS = {
+      iv_v_i: { name: 'I–IV–V–I', song: 'La Bamba, and many hymns', chords: ['I', 'IV', 'V', 'I'] },
+      v_vi_iv: { name: 'I–V–vi–IV', song: 'Let It Be', chords: ['I', 'V', 'vi', 'IV'] },
+      vi_iv_v: { name: 'I–vi–IV–V', song: 'Stand by Me', chords: ['I', 'vi', 'IV', 'V'] },
+      amen: { name: 'I–IV–I–V', song: 'the hymn amen cadence', chords: ['I', 'IV', 'I', 'V'] },
+      ii_v_i: { name: 'ii–V–I', song: 'jazz standards', chords: ['ii', 'V', 'I'] },
+      vi_iv_i: { name: 'vi–IV–I–V', song: 'Zombie', chords: ['vi', 'IV', 'I', 'V'] },
+      andalusian: { name: 'i–VII–VI–V', song: 'Hit the Road Jack', chords: ['i', 'VII', 'VI', 'V'] },
+      rhythm: { name: 'I–vi–ii–V', song: 'I Got Rhythm', chords: ['I', 'vi', 'ii', 'V'] },
+    };
+
+    // Five levels per type; each level adds closer, harder sounds.
+    const LEVEL_SOUNDS = {
+      intervals: [
+        ['unison', 'octave'],
+        ['unison', 'octave', 'p5'],
+        ['unison', 'octave', 'p5', 'p4'],
+        ['unison', 'octave', 'p5', 'p4', 'maj3', 'min3'],
+        ['unison', 'octave', 'p5', 'p4', 'maj3', 'min3', 'maj2', 'min2'],
+      ],
+      chords: [
+        ['maj', 'min'],
+        ['maj', 'min', 'dom7'],
+        ['maj', 'min', 'dom7', 'dim'],
+        ['maj', 'min', 'dom7', 'dim', 'aug', 'min7'],
+        ['maj', 'min', 'dom7', 'dim', 'aug', 'min7', 'maj7', 'm7b5'],
+      ],
+      progressions: [
+        ['iv_v_i', 'v_vi_iv'],
+        ['iv_v_i', 'v_vi_iv', 'vi_iv_v'],
+        ['iv_v_i', 'v_vi_iv', 'vi_iv_v', 'amen'],
+        ['iv_v_i', 'v_vi_iv', 'vi_iv_v', 'amen', 'ii_v_i', 'vi_iv_i'],
+        ['iv_v_i', 'v_vi_iv', 'vi_iv_v', 'amen', 'ii_v_i', 'vi_iv_i', 'andalusian', 'rhythm'],
+      ],
+    };
+
+    const TYPE_LABELS = { intervals: 'Intervals', chords: 'Chords', progressions: 'Progressions' };
+    const QUESTION_COUNT = 10;
+    // Keys the progressions are played in, as MIDI middle-C values.
+    const PROG_KEYS = [60, 62, 65, 67]; // C, D, F, G
+
+    function soundName(type, id) {
+      if (type === 'intervals') return CATALOG.intervals[id].name;
+      if (type === 'chords') return CATALOG.chords[id].name;
+      return PROGRESSIONS[id].name;
     }
 
-    document.getElementById('press-btn').addEventListener('click', async () => {
+    // The notes of one sound, as groups played in sequence. Intervals and
+    // chords are one group at a random pitch; progressions are one group per
+    // chord, voiced close around middle C, in a random key.
+    function soundGroups(type, id) {
+      if (type === 'intervals') {
+        const root = 48 + Math.floor(Math.random() * 12); // C3..B3
+        return [[root, root + CATALOG.intervals[id].semitones]];
+      }
+      if (type === 'chords') {
+        const root = 48 + Math.floor(Math.random() * 12);
+        return [CATALOG.chords[id].shape.map(s => root + s)];
+      }
+      const key = PROG_KEYS[Math.floor(Math.random() * PROG_KEYS.length)];
+      return PROGRESSIONS[id].chords.map(deg => {
+        const d = DEGREES[deg];
+        const rootMidi = 55 + (((d.pc + key - 55) % 12) + 12) % 12;
+        return d.shape.map(s => rootMidi + s);
+      });
+    }
+
+    function feedbackName(type, id) {
+      const name = soundName(type, id);
+      if (type === 'progressions') return name + ' — ' + PROGRESSIONS[id].song;
+      return name;
+    }
+
+    // ---- Audio (Web Audio API, created lazily inside a tap) ----
+
+    let audioCtx = null;
+    let soundBroken = false;
+
+    function ensureCtx() {
+      if (soundBroken) return null;
       try {
-        const res = await fetch('/api/press', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', ...headers },
+        if (!audioCtx) {
+          const Ctx = window.AudioContext || window.webkitAudioContext;
+          if (!Ctx) { soundBroken = true; return null; }
+          audioCtx = new Ctx();
+        }
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        return audioCtx;
+      } catch (err) {
+        soundBroken = true;
+        return null;
+      }
+    }
+
+    function midiToFreq(midi) { return 440 * Math.pow(2, (midi - 69) / 12); }
+
+    // A piano-ish note: a triangle body, a sine an octave up and a sine an
+    // octave down, through one quick-attack, ~1.5 s decay envelope.
+    function playNote(ctx, midi, when, dur) {
+      const freq = midiToFreq(midi);
+      const env = ctx.createGain();
+      env.connect(ctx.destination);
+      env.gain.setValueAtTime(0, when);
+      env.gain.linearRampToValueAtTime(0.14, when + 0.012);
+      env.gain.exponentialRampToValueAtTime(0.0001, when + dur);
+      const parts = [
+        { type: 'triangle', freq: freq, vol: 1 },
+        { type: 'sine', freq: freq * 2, vol: 0.35 },
+        { type: 'sine', freq: freq * 0.5, vol: 0.25 },
+      ];
+      for (const p of parts) {
+        const osc = ctx.createOscillator();
+        osc.type = p.type;
+        osc.frequency.value = p.freq;
+        osc.detune.value = Math.random() * 6 - 3;
+        const g = ctx.createGain();
+        g.gain.value = p.vol;
+        osc.connect(g);
+        g.connect(env);
+        osc.start(when);
+        osc.stop(when + dur + 0.05);
+      }
+    }
+
+    function playGroups(groups) {
+      const ctx = ensureCtx();
+      if (!ctx) {
+        document.getElementById('sound-note').classList.remove('hidden');
+        return;
+      }
+      const t0 = ctx.currentTime + 0.03;
+      groups.forEach((group, gi) => {
+        group.forEach((midi, ni) => playNote(ctx, midi, t0 + gi * 0.6 + ni * 0.015, 1.5));
+      });
+    }
+
+    // ---- Piano keyboard (SVG, C3–C5), lit after answering ----
+
+    const KB_LOW = 48, KB_HIGH = 72;
+    const WHITE_W = 24, KB_H = 96, BLACK_W = 14, BLACK_H = 60;
+    const WHITE_CLASS = 'kb-key fill-white stroke-slate-400 dark:fill-slate-200 dark:stroke-slate-500';
+    const BLACK_CLASS = 'kb-key fill-slate-800 stroke-slate-950 dark:fill-slate-800 dark:stroke-slate-600';
+    const WHITE_LIT = 'kb-key fill-amber-400 stroke-amber-600';
+    const BLACK_LIT = 'kb-key fill-amber-500 stroke-amber-700';
+
+    function buildKeyboard() {
+      const whitePcs = [0, 2, 4, 5, 7, 9, 11];
+      const whites = [], blacks = [];
+      let x = 0;
+      for (let m = KB_LOW; m <= KB_HIGH; m++) {
+        if (whitePcs.includes(m % 12)) {
+          whites.push({ midi: m, x: x });
+          x += WHITE_W;
+        } else {
+          blacks.push({ midi: m, x: x - BLACK_W / 2 });
+        }
+      }
+      const svg = document.getElementById('keyboard');
+      svg.innerHTML =
+        whites.map(k =>
+          '<rect data-midi="' + k.midi + '" data-base="' + WHITE_CLASS + '" data-lit="' + WHITE_LIT + '"' +
+          ' x="' + k.x + '" y="0" width="' + WHITE_W + '" height="' + KB_H + '" rx="3" stroke-width="1" class="' + WHITE_CLASS + '"/>'
+        ).join('') +
+        blacks.map(k =>
+          '<rect data-midi="' + k.midi + '" data-base="' + BLACK_CLASS + '" data-lit="' + BLACK_LIT + '"' +
+          ' x="' + k.x + '" y="0" width="' + BLACK_W + '" height="' + BLACK_H + '" rx="2" stroke-width="1" class="' + BLACK_CLASS + '"/>'
+        ).join('');
+    }
+
+    function lightKeys(groups) {
+      const lit = new Set();
+      groups.forEach(g => g.forEach(m => lit.add(m)));
+      document.querySelectorAll('#keyboard rect').forEach(el => {
+        const on = lit.has(Number(el.getAttribute('data-midi')));
+        el.setAttribute('class', on ? el.getAttribute('data-lit') : el.getAttribute('data-base'));
+      });
+    }
+
+    function dimKeyboard() {
+      document.querySelectorAll('#keyboard rect').forEach(el => {
+        el.setAttribute('class', el.getAttribute('data-base'));
+      });
+    }
+
+    // ---- Views and state ----
+
+    const listView = document.getElementById('list-view');
+    const lessonView = document.getElementById('lesson-view');
+    const doneView = document.getElementById('done-view');
+
+    function showView(name) {
+      listView.classList.toggle('hidden', name !== 'list');
+      lessonView.classList.toggle('hidden', name !== 'lesson');
+      doneView.classList.toggle('hidden', name !== 'done');
+    }
+
+    // Progress, keyed "type:level" → { best_correct, best_total, attempts }.
+    let progress = {};
+    let progressLoaded = false;
+
+    async function loadProgress() {
+      const message = document.getElementById('list-message');
+      try {
+        const res = await fetch('/api/progress', { headers });
+        if (res.status === 401) {
+          message.textContent = 'Sign in through Homeroom to keep your scores.';
+          message.classList.remove('hidden');
+          return;
+        }
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        progress = {};
+        (data.progress || []).forEach(row => {
+          progress[row.lesson_type + ':' + row.level] = row;
         });
-        if (res.ok) loadLeaderboard();
-        else if (res.status === 401) document.getElementById('count').textContent = 'Sign in to press!';
-      } catch {}
+        progressLoaded = true;
+        message.classList.add('hidden');
+      } catch (err) {
+        message.textContent = 'Could not load your progress — reload to try again.';
+        message.classList.remove('hidden');
+      }
+      renderList();
+    }
+
+    function bestLabel(type, level) {
+      const row = progress[type + ':' + level];
+      if (!row || !row.attempts) return 'not played yet';
+      return 'best ' + row.best_correct + '/' + row.best_total;
+    }
+
+    function renderList() {
+      const container = document.getElementById('lesson-sections');
+      container.innerHTML = Object.keys(TYPE_LABELS).map(type => {
+        const rows = LEVEL_SOUNDS[type].map((sounds, i) => {
+          const level = i + 1;
+          return '<button data-type="' + type + '" data-level="' + level + '" class="lesson-row w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-slate-100 dark:hover:bg-slate-800/60">' +
+            '<span class="text-sm font-semibold">Level ' + level + ' · ' + sounds.length + ' sounds</span>' +
+            '<span class="text-xs text-slate-500 dark:text-slate-400">' + bestLabel(type, level) + '</span>' +
+            '</button>';
+        }).join('');
+        return '<section>' +
+          '<h2 class="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2 px-1">' + TYPE_LABELS[type] + '</h2>' +
+          '<div class="rounded-xl border border-slate-200 bg-white divide-y divide-slate-200 dark:border-slate-800 dark:bg-slate-900/60 dark:divide-slate-800 overflow-hidden">' + rows + '</div>' +
+          '</section>';
+      }).join('');
+      container.querySelectorAll('.lesson-row').forEach(el => {
+        el.addEventListener('click', () => startLesson(el.getAttribute('data-type'), Number(el.getAttribute('data-level'))));
+      });
+    }
+
+    // ---- Lesson (session) state ----
+
+    let session = null;
+
+    function startLesson(type, level) {
+      session = { type: type, level: level, question: 0, correct: 0, answered: false, current: null };
+      document.getElementById('lesson-title').textContent = TYPE_LABELS[type] + ' · Level ' + level;
+      showView('lesson');
+      nextQuestion();
+    }
+
+    function nextQuestion() {
+      const sounds = LEVEL_SOUNDS[session.type][session.level - 1];
+      const id = sounds[Math.floor(Math.random() * sounds.length)];
+      session.question += 1;
+      session.answered = false;
+      session.current = { id: id, groups: soundGroups(session.type, id) };
+
+      document.getElementById('question-count').textContent = 'Question ' + session.question + ' of ' + QUESTION_COUNT;
+      updateScore();
+      document.getElementById('feedback').textContent = '';
+      document.getElementById('feedback').className = 'text-sm font-semibold';
+      const nextBtn = document.getElementById('next-btn');
+      nextBtn.classList.add('hidden');
+      document.getElementById('play-btn').classList.remove('hidden');
+      dimKeyboard();
+      renderAnswers(sounds);
+    }
+
+    function updateScore() {
+      document.getElementById('score').textContent =
+        'Score ' + session.correct + '/' + (session.question - 1);
+    }
+
+    const ANSWER_BASE = 'answer-btn w-full px-3 py-3 rounded-xl border text-sm font-medium transition-colors bg-white border-slate-200 hover:border-amber-500 dark:bg-slate-900 dark:border-slate-700 dark:hover:border-amber-500';
+    const ANSWER_IDLE = 'answer-btn w-full px-3 py-3 rounded-xl border text-sm font-medium bg-white border-slate-200 dark:bg-slate-900 dark:border-slate-700 opacity-40';
+    const ANSWER_RIGHT = 'answer-btn w-full px-3 py-3 rounded-xl border text-sm font-medium bg-emerald-50 border-emerald-500 text-emerald-700 dark:bg-emerald-500/10 dark:border-emerald-500 dark:text-emerald-300';
+    const ANSWER_WRONG = 'answer-btn w-full px-3 py-3 rounded-xl border text-sm font-medium bg-rose-50 border-rose-500 text-rose-700 dark:bg-rose-500/10 dark:border-rose-500 dark:text-rose-300';
+
+    function renderAnswers(sounds) {
+      const container = document.getElementById('answers');
+      container.innerHTML = shuffle(sounds).map(id =>
+        '<button data-sound="' + id + '" class="' + ANSWER_BASE + '">' + soundName(session.type, id) + '</button>'
+      ).join('');
+      container.querySelectorAll('.answer-btn').forEach(el => {
+        el.addEventListener('click', () => answer(el.getAttribute('data-sound')));
+      });
+    }
+
+    function shuffle(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const t = a[i]; a[i] = a[j]; a[j] = t;
+      }
+      return a;
+    }
+
+    function answer(chosen) {
+      if (!session || session.answered) return;
+      session.answered = true;
+      const right = chosen === session.current.id;
+      if (right) session.correct += 1;
+      updateScore();
+
+      const sounds = LEVEL_SOUNDS[session.type][session.level - 1];
+      document.querySelectorAll('#answers .answer-btn').forEach(el => {
+        const id = el.getAttribute('data-sound');
+        el.disabled = true;
+        if (id === session.current.id) el.className = ANSWER_RIGHT;
+        else if (id === chosen) el.className = ANSWER_WRONG;
+        else el.className = ANSWER_IDLE;
+      });
+
+      const feedback = document.getElementById('feedback');
+      if (right) {
+        feedback.textContent = 'Correct!';
+        feedback.className = 'text-sm font-semibold text-emerald-600 dark:text-emerald-400';
+      } else {
+        feedback.textContent = 'Not quite — it was ' + feedbackName(session.type, session.current.id);
+        feedback.className = 'text-sm font-semibold text-rose-600 dark:text-rose-400';
+      }
+      lightKeys(session.current.groups);
+
+      const nextBtn = document.getElementById('next-btn');
+      nextBtn.textContent = session.question === QUESTION_COUNT ? 'Finish' : 'Next';
+      nextBtn.classList.remove('hidden');
+
+      if (session.question === QUESTION_COUNT) saveAttempt();
+    }
+
+    function saveAttempt() {
+      const body = {
+        lesson_type: session.type,
+        level: session.level,
+        correct: session.correct,
+        total: QUESTION_COUNT,
+      };
+      fetch('/api/attempt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...headers },
+        body: JSON.stringify(body),
+      }).then(res => {
+        if (res.ok) {
+          const key = session.type + ':' + session.level;
+          const row = progress[key] || { best_correct: 0, best_total: 0, attempts: 0 };
+          if (session.correct > row.best_correct || !row.attempts) {
+            row.best_correct = session.correct;
+            row.best_total = QUESTION_COUNT;
+          }
+          row.attempts += 1;
+          progress[key] = row;
+        }
+      }).catch(() => {});
+    }
+
+    // ---- Wiring ----
+
+    document.getElementById('play-btn').addEventListener('click', () => {
+      if (session && session.current) playGroups(session.current.groups);
     });
 
-    loadLeaderboard();
+    document.getElementById('next-btn').addEventListener('click', () => {
+      if (!session) return;
+      if (session.question === QUESTION_COUNT) {
+        document.getElementById('done-score').textContent =
+          'You got ' + session.correct + ' of ' + QUESTION_COUNT + '. Pick another lesson to keep going.';
+        showView('done');
+      } else {
+        nextQuestion();
+      }
+    });
+
+    document.getElementById('back-btn').addEventListener('click', () => {
+      session = null;
+      showView('list');
+      loadProgress();
+    });
+
+    document.getElementById('done-btn').addEventListener('click', () => {
+      session = null;
+      showView('list');
+      loadProgress();
+    });
+
+    buildKeyboard();
+
+    // Open a lesson directly from a share link: /?lesson=intervals&level=3
+    const linkType = params.get('lesson');
+    const linkLevel = Number(params.get('level'));
+    if (TYPE_LABELS[linkType] && linkLevel >= 1 && linkLevel <= 5 && Number.isInteger(linkLevel)) {
+      startLesson(linkType, linkLevel);
+    } else {
+      showView('list');
+      renderList();
+      loadProgress();
+    }
+  })();
   </script>
 </body>
 </html>

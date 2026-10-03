@@ -99,11 +99,37 @@ tables you've marked private), etc.
 
 ## About Ear Trainer
 
-_(add a sentence or two of product context here so Claude Code has a
-shared understanding of what this app is for)_
+Ear Trainer teaches people to recognise intervals, chords and chord
+progressions by ear. The screen has one job at a time: pick a lesson
+(three types × five levels of growing set size), or hear a sound and tap
+its name over 10 questions. Sounds are synthesized in the browser with
+the Web Audio API at a random pitch/key so users learn the shape of a
+sound, not one absolute pitch; after answering, an SVG piano keyboard
+lights up the notes that were played. Best scores per lesson level are
+saved per user in `lesson_progress` (with append-only history in
+`quiz_attempts`); both tables are `staging:private`.
 
 ## App-specific conventions
 
-_(optional — e.g. "all currency values stored as integer cents, not
-floats"; "the `posts` table is append-only"; "avoid adding new
-dependencies"; etc.)_
+Design:
+- Accent: warm **amber** (`amber-500` primary, `amber-400` hover) on
+  **slate** neutrals (light: `slate-50` bg / `slate-900` text; dark:
+  `slate-950` bg / `slate-100` text). Emerald = correct, rose = wrong —
+  reserved for feedback, never decoration. No other colours.
+- Signature element: the inline SVG piano keyboard (C3–C5) at the bottom
+  of the lesson screen; the played notes light up in amber after an
+  answer. New sound-related screens should build on it.
+- Both looks always (Tailwind `dark:` variants; the viewer's Homeroom
+  theme is the control — no theme picker). Light and dark built with the
+  same slate card idiom: `rounded-xl border` cards, `divide-y` rows.
+- Vocabulary: *Lesson*, *Level*, *sound*, *Play*, *answers*, *Next*,
+  *Finish*, *Score*, *best*, *Session complete*. Never "quiz", "test" or
+  "exercise" on screen.
+- One primary action per view (Play before answering, Next after); one
+  amber filled button per screen.
+- Curriculum ordering rule: within a lesson type, sounds are added from
+  most distinct to most similar across the five levels (sizes 2, 3, 4,
+  6, 8). New sounds should follow that order.
+- The lesson catalog is static frontend data in `public/index.html`; the
+  server only stores results. `quiz_attempts` is append-only; never
+  delete or aggregate rows away.
