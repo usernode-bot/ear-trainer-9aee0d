@@ -16,18 +16,16 @@ your ear rather than absolute pitch.
 
 Each type has four lessons, ordered from a few contrasting sounds up to the
 full set. The first lesson is open from the start; passing any run at 80% or
-better unlocks the next lesson. Inside a lesson you pick a size (small, medium
-or large) that controls how many different sounds you are quizzed on. Each run
-is ten questions, and your best score per lesson and size is saved
-automatically.
+better unlocks the next lesson. A run quizzes you on every sound in the lesson
+you opened — to practice fewer sounds, open an earlier lesson. Each run is ten
+questions, and your best score per lesson is saved automatically.
 
 ## How it works
 
 - Sign-in comes from the platform: the server verifies the Homeroom-issued
   user token (an RS256 JWT) on every request. No accounts to build.
 - Attempt results live in the app's own Postgres database in an `attempts`
-  table; `/api/progress` aggregates each user's best score per lesson and
-  size.
+  table; `/api/progress` aggregates each user's best score per lesson.
 - All sounds are synthesized with the Web Audio API. No audio files, no
   dependencies beyond the starter's Express / Postgres / JWT stack.
 - Styling is Tailwind CSS, precompiled by `npm run build` during image
