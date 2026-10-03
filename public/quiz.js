@@ -18,9 +18,7 @@
   var groupsRoot = document.getElementById('lesson-groups');
   var quizTitle = document.getElementById('quiz-title');
   var quizDesc = document.getElementById('quiz-desc');
-  var sizeChoice = document.getElementById('size-choice');
   var sizeNote = document.getElementById('size-note');
-  var startBtn = document.getElementById('start-btn');
   var quizArea = document.getElementById('quiz-area');
   var playbackError = document.getElementById('playback-error');
   var playBtn = document.getElementById('play-btn');
@@ -253,42 +251,17 @@
     return item.name;
   }
 
-  function showStartScreen() {
-    var n = lesson.items.length;
-    sizeNote.textContent = 'All ' + n + (n === 1 ? ' sound' : ' sounds') +
-      ' in this lesson · 10 questions';
-    sizeChoice.classList.remove('hidden');
-    quizArea.classList.add('hidden');
-    quizArea.classList.remove('flex');
-    resultsEl.classList.add('hidden');
-    playBtn.classList.add('hidden');
-    answersEl.innerHTML = '';
-    feedback.textContent = '';
-    nextBtn.classList.add('hidden');
-    progressEl.classList.add('hidden');
-    playbackError.classList.add('hidden');
-  }
-
-  function showQuizArea() {
-    sizeChoice.classList.add('hidden');
-    resultsEl.classList.add('hidden');
-    quizArea.classList.remove('hidden');
-    quizArea.classList.add('flex');
-  }
-
   function openLesson(lessonId) {
     lesson = findLesson(lessonId);
     if (!lesson) return;
-    activeSet = [];
-    questions = [];
-    correctCount = 0;
-    questionIndex = 0;
-    answered = false;
     quizTitle.textContent = lesson.name;
     quizDesc.textContent = lesson.description;
     home.classList.add('hidden');
     quiz.classList.remove('hidden');
-    showStartScreen();
+    // The first question plays inside this click handler (the lesson button
+    // on the home screen), satisfying autoplay rules — there is no separate
+    // start step anymore.
+    buildQuestions();
     window.scrollTo(0, 0);
   }
 
@@ -303,10 +276,18 @@
     questionIndex = 0;
     correctCount = 0;
     answered = false;
-    showQuizArea();
+    var n = activeSet.length;
+    sizeNote.textContent = 'All ' + n + (n === 1 ? ' sound' : ' sounds') +
+      ' in this lesson · 10 questions';
+    resultsEl.classList.add('hidden');
+    quizArea.classList.remove('hidden');
+    quizArea.classList.add('flex');
     progressEl.classList.remove('hidden');
     playBtn.classList.remove('hidden');
     playBtn.disabled = false;
+    playbackError.classList.add('hidden');
+    feedback.textContent = '';
+    nextBtn.classList.add('hidden');
     showQuestion();
   }
 
@@ -364,7 +345,6 @@
     scoreEl.textContent = correctCount + ' of 10 — ' + Math.round((correctCount / 10) * 100) + '%';
     quizArea.classList.add('hidden');
     quizArea.classList.remove('flex');
-    sizeChoice.classList.add('hidden');
     resultsEl.classList.remove('hidden');
 
     fetch('/api/attempts', {
@@ -391,11 +371,6 @@
 
   // ---------- wiring ----------
 
-  startBtn.addEventListener('click', function () {
-    // First question plays inside this click handler, satisfying autoplay rules.
-    buildQuestions();
-  });
-
   playBtn.addEventListener('click', function () {
     if (questionIndex < questions.length) playItem(questions[questionIndex]);
   });
@@ -410,7 +385,9 @@
   });
 
   retryBtn.addEventListener('click', function () {
-    showStartScreen();
+    // The first question plays inside this click handler, satisfying autoplay
+    // rules — Retry jumps straight into a fresh run.
+    buildQuestions();
   });
 
   backBtn.addEventListener('click', backToHome);
