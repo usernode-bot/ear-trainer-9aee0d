@@ -1,4 +1,8 @@
 {
+  "icon": {
+    "image": "brand/icon.png",
+    "emoji": "👂"
+  },
   "description": "Learn to identify relative notes, chords, and progressions from songs and hymns",
   "secrets": [],
   "governance": {
