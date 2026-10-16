@@ -6,10 +6,7 @@
   "description": "Learn to identify relative notes, chords, and progressions from songs and hymns",
   "secrets": [],
   "governance": {
-    "approvers": "invited",
-    "approvals": {
-      "atLeast": 1
-    }
+    "preset": "you_or_the_group"
   },
   "tests": [
     {
@@ -24,5 +21,9 @@
         "public/quiz.js"
       ]
     }
-  ]
+  ],
+  "visibility": {
+    "build": "private",
+    "view": "private"
+  }
 }
