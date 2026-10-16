@@ -25,5 +25,6 @@
   "visibility": {
     "build": "private",
     "view": "private"
-  }
+  },
+  "name": "Ear Trainer (test)"
 }
